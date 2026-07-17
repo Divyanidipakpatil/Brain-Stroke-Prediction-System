@@ -1,0 +1,12 @@
+# Python cache
+__pycache__/
+*.pyc
+app/__pycache__/
+
+# Local Database
+*.db
+app.db
+
+# Temporary/Local configs
+.env
+1.excalidraw

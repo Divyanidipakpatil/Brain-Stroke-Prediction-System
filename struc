@@ -1,0 +1,533 @@
+BrainStrokeSystem/
+├── dataset/
+│   └── stroke_data.csv
+├── model/                        # saved models and pipeline files
+│   ├── rf_pipeline.pkl
+│   ├── xgb_pipeline.pkl
+│   └── lr_pipeline.pkl
+├── app/                          # Flask backend
+│   ├── app.py
+│   ├── models.py                 # SQLAlchemy models / DB
+│   ├── ml_utils.py               # load models, predict, explain
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   ├── templates/
+│   │   └── index.html
+│   └── static/
+│       └── js/
+│           └── main.js
+├── training/
+│   └── train_models.py
+├── iot_examples/
+│   └── esp32_post_glucose.ino
+└── README.md
+
+
+C:\Users\HP\Desktop\BrainStrokePrediction>venv\Scripts\activate
+
+(venv) C:\Users\HP\Desktop\BrainStrokePrediction>set FLASK_APP=app/main.py
+
+(venv) C:\Users\HP\Desktop\BrainStrokePrediction>flask run
+
+
+
+BrainStrokePrediction>venv\Scripts\activate
+
+(venv) C:\Users\HP\Downloads\BrainStrokePrediction-20260415T180550Z-3-001\BrainStrokePrediction>set FLASK_APP=app/main.py
+
+(venv) C:\Users\HP\Downloads\BrainStrokePrediction-20260415T180550Z-3-001\BrainStrokePrediction>set FLASK_APP=server.py
+
+(venv) C:\Users\HP\Downloads\BrainStrokePrediction-20260415T180550Z-3-001\BrainStrokePrediction>flask run --host=0.0.0.0 --port=5001
+ * Serving Flask app 'server.py'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.227.36.243:5001
+
+
+ server chek  link ip 
+ app
+ web
+
+Accuracy of Model:-
+
+
+
+
+(venv) C:\Users\HP\Desktop\BrainStrokePrediction>python training/evaluate_models.py
+📂 Loading dataset: C:\Users\HP\Desktop\BrainStrokePrediction\dataset\stroke_data.csv
+
+===== 🧠 MODEL EVALUATION RESULTS =====
+
+🔹 Evaluating Random Forest...
+✅ Training Accuracy: 0.845
+✅ Testing Accuracy:  0.819
+📋 Confusion Matrix:
+ [[811 161]
+ [ 24  26]]
+📄 Classification Report:
+               precision    recall  f1-score   support
+
+           0      0.971     0.834     0.898       972
+           1      0.139     0.520     0.219        50
+
+    accuracy                          0.819      1022
+   macro avg      0.555     0.677     0.559      1022
+weighted avg      0.931     0.819     0.864      1022
+
+------------------------------------------------------------
+🔹 Evaluating XGBoost...
+✅ Training Accuracy: 0.776
+✅ Testing Accuracy:  0.747
+📋 Confusion Matrix:
+ [[730 242]
+ [ 17  33]]
+📄 Classification Report:
+               precision    recall  f1-score   support
+
+           0      0.977     0.751     0.849       972
+           1      0.120     0.660     0.203        50
+
+    accuracy                          0.747      1022
+   macro avg      0.549     0.706     0.526      1022
+weighted avg      0.935     0.747     0.818      1022
+
+------------------------------------------------------------
+🔹 Evaluating Logistic Regression...
+✅ Training Accuracy: 0.745
+✅ Testing Accuracy:  0.750
+📋 Confusion Matrix:
+ [[726 246]
+ [ 10  40]]
+📄 Classification Report:
+               precision    recall  f1-score   support
+
+           0      0.986     0.747     0.850       972
+           1      0.140     0.800     0.238        50
+
+    accuracy                          0.750      1022
+   macro avg      0.563     0.773     0.544      1022
+weighted avg      0.945     0.750     0.820      1022
+
+------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+🧠 1️⃣ age
+
+Definition:
+The person’s age (in years).
+
+Why it’s used:
+Age is the strongest and most consistent predictor of stroke risk. Arteries stiffen, plaque builds up, and blood pressure rises with age.
+
+Impact:
+
+Risk increases exponentially after age 55.
+
+The older the person, the higher the likelihood of both ischemic and hemorrhagic stroke.
+
+🚻 2️⃣ gender
+
+Definition:
+The biological sex of the person (Male/Female/Other).
+
+Why it’s used:
+There are biological and lifestyle differences in stroke patterns:
+
+Men tend to have strokes earlier.
+
+Women tend to live longer, so have higher stroke rates in older age.
+
+Impact:
+
+Gender affects hormonal protection, blood pressure trends, and lifestyle exposure (smoking/alcohol).
+
+Often, males have slightly higher predicted risk at younger ages.
+
+❤️ 3️⃣ hypertension
+
+Definition:
+Whether the person has chronic high blood pressure (BP ≥ 140/90 mmHg).
+Binary variable: 1 = Yes, 0 = No.
+
+Why it’s used:
+High BP is the #1 cause of stroke worldwide.
+
+Impact:
+
+Increases risk by 4–6 times.
+
+Damages blood vessel walls → thickening, narrowing, and higher chance of rupture or clot.
+
+💓 4️⃣ heart_disease
+
+Definition:
+Whether the person has any cardiovascular condition (like atrial fibrillation, heart failure, etc.).
+Binary variable: 1 = Yes, 0 = No.
+
+Why it’s used:
+Certain heart problems cause blood clots that can travel to the brain (embolic stroke).
+
+Impact:
+
+Greatly increases stroke probability (especially atrial fibrillation).
+
+Also indicates poor blood circulation or prior cardiovascular strain.
+
+💍 5️⃣ ever_married
+
+Definition:
+Whether the person has ever been married (Yes/No).
+
+Why it’s used:
+This is not a medical factor — it’s a socio-demographic proxy.
+
+Impact:
+
+In datasets, “Ever Married” tends to correlate with older age, different lifestyle, and stress exposure.
+
+Models may misinterpret it as a risk factor due to its correlation with age, not causation.
+
+💼 6️⃣ work_type
+
+Definition:
+Occupation type: Private, Self-employed, Govt_job, Children, or Never_worked.
+
+Why it’s used:
+Work type reflects lifestyle patterns, activity level, and stress exposure.
+
+Impact:
+
+Sedentary jobs (office work) and stress-heavy roles correlate with higher stroke risk.
+
+“Children” or “Never worked” categories often imply younger, low-risk individuals.
+
+🏙️ 7️⃣ Residence_type
+
+Definition:
+Whether the person lives in an Urban or Rural area.
+
+Why it’s used:
+Lifestyle and healthcare access differ between urban and rural populations.
+
+Impact:
+
+Urban → more sedentary lifestyle, fast food, stress → slightly higher risk.
+
+Rural → less healthcare access → higher mortality if stroke occurs.
+
+Impact depends on dataset balance and region.
+
+🍬 8️⃣ avg_glucose_level
+
+Definition:
+Average glucose (blood sugar) level in mg/dL.
+
+Why it’s used:
+It indicates diabetes or prediabetes, a major stroke risk factor.
+
+Impact:
+
+High glucose → vascular inflammation, plaque buildup, and clot formation.
+
+Each 10 mg/dL increase above normal (≈100 mg/dL) increases stroke risk significantly.
+
+⚖️ 9️⃣ bmi (Body Mass Index)
+
+Definition:
+A measure of body fat based on height and weight:
+
+𝐵
+𝑀
+𝐼
+=
+𝑤
+𝑒
+𝑖
+𝑔
+ℎ
+𝑡
+(
+𝑘
+𝑔
+)
+[
+ℎ
+𝑒
+𝑖
+𝑔
+ℎ
+𝑡
+(
+𝑚
+)
+]
+2
+BMI=
+[height(m)]
+2
+weight(kg)
+	​
+
+
+Why it’s used:
+BMI indicates obesity, a key metabolic risk factor for stroke.
+
+Impact:
+
+High BMI (≥30) → hypertension, diabetes, atherosclerosis → ↑ stroke risk.
+
+Extremely low BMI can also be risky (malnutrition).
+
+🚬 🔟 smoking_status
+
+Definition:
+Smoking habit:
+
+never smoked
+
+formerly smoked
+
+smokes
+
+Why it’s used:
+Smoking is one of the top modifiable lifestyle factors for stroke.
+
+Impact:
+
+Smoking damages arteries, raises blood pressure, and increases clot risk.
+
+“Formerly smoked” still carries some residual vascular damage.
+
+🩸 11️⃣ stroke (Target Variable)
+
+Definition:
+Whether the person has ever had a stroke (1 = Yes, 0 = No).
+
+Why it’s used:
+This is the label (what the model is trying to predict).
+
+Impact:
+All the above features are used to estimate the probability that stroke = 1.
+
+
+
+
+
+
+
+
+
+
+
+
+
+WORKING:-⚙️ How Each Model Works in Your Stroke Prediction App
+Your Flask app takes user input like this 👇
+{
+  "age": 65,
+  "avg_glucose_level": 145,
+  "bmi": 30,
+  "hypertension": 1,
+  "heart_disease": 0,
+  "gender": "Male",
+  "ever_married": "Yes",
+  "work_type": "Private",
+  "Residence_type": "Urban",
+  "smoking_status": "formerly smoked"
+}
+
+Then your backend (ml_utils.py) prepares this data and sends it to 3 trained models — Logistic Regression, Random Forest, and XGBoost — to predict the stroke probability.
+Here’s what happens behind the scenes 👇
+
+🧩 STEP 1: Preprocessing
+Before sending to models:
+
+
+The data is encoded (Male → 1, Female → 0, etc.)
+
+
+Missing values are filled.
+
+
+Numeric values are scaled.
+
+
+Categorical values are one-hot encoded (converted to binary columns).
+
+
+This ensures input matches how models were trained.
+
+⚖️ STEP 2: Each Model Predicts
+🧠 1️⃣ Logistic Regression
+
+
+Works like a mathematical formula:
+stroke_risk = sigmoid(w1*age + w2*bmi + w3*glucose + ... + b)
+
+
+
+It adds all weighted inputs, applies the sigmoid function, and outputs a probability between 0 and 1.
+
+
+Example:
+stroke_risk = 0.35  → means 35% chance of stroke
+
+
+
+It’s simple but interpretable — tells you how much each feature contributes.
+
+
+
+🌳 2️⃣ Random Forest
+
+
+Your dataset is sent through hundreds of decision trees (you trained with ~150–200 trees).
+
+
+Each tree makes a small decision, e.g.:
+
+
+“If age > 60 → stroke”
+
+
+“If glucose > 140 and BMI > 28 → stroke”
+
+
+etc.
+
+
+
+
+Each tree votes, and the final probability = average of votes.
+
+
+Example: 180 trees vote “stroke”, 20 vote “no stroke”
+→ Probability = 180 / 200 = 0.9 (90%)
+
+
+
+
+✅ Good for catching nonlinear relationships (like combinations of factors).
+
+⚡ 3️⃣ XGBoost
+
+
+Works smarter than Random Forest — it builds trees one-by-one.
+
+
+Each new tree learns from the mistakes of the previous ones.
+
+
+If the model previously misclassified older diabetic people → next tree focuses more on that.
+
+
+
+
+Gradually improves until predictions are highly optimized.
+
+
+✅ Gives the highest accuracy in your evaluation (AUC = 0.92).
+✅ Works best for real-world stroke prediction deployment.
+
+🧮 STEP 3: Ensemble Averaging
+In your ensemble_predict_proba():
+for name, pipe in MODELS.items():
+    p = float(pipe.predict_proba(df)[0][1])
+    model_probs[name] = p
+    total_prob += p
+
+avg_prob = total_prob / len(MODELS)
+
+So, each model gives a probability:
+ModelProbability of StrokeLogistic Regression0.35Random Forest0.55XGBoost0.65
+Final (average) = (0.35 + 0.55 + 0.65) / 3 = 0.52 (52%)
+
+🎯 STEP 4: Categorization
+Your app then converts that probability to a risk category:
+if prob >= 0.6:  High Risk
+elif prob >= 0.3: Moderate Risk
+else: Low Risk
+
+✅ Example: 0.52 → “Moderate Stroke Risk”
+
+🧠 STEP 5: SHAP Explanation
+
+
+Then SHAP is used to find which features influenced the prediction most.
+
+
+For example:
+[
+  ("age", 32%), 
+  ("avg_glucose_level", 27%), 
+  ("bmi", 15%), 
+  ("hypertension", 10%)
+]
+
+
+
+This helps you explain why the model predicted a certain risk.
+
+
+
+🩺 Summary — How All Three Work Together
+ModelTypeWhat It Does in Your ProjectLogistic RegressionLinear baselineLearns simple direct relationships (like high glucose → higher risk).Random ForestEnsemble of treesFinds hidden nonlinear combinations of features (like “age + smoking” risk).XGBoostGradient boostingLearns patterns more efficiently and gives final optimized prediction.Ensemble (Your System)Combines all 3Takes average probability for balanced and accurate stroke prediction.
+
+Would you like me to make a visual flow diagram (input → each model → ensemble → result + SHAP graph) so you can include it in your report or website? It’ll make this workflow very clear visually.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

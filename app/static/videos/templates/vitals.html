@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitals Tracking | NeuroScan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --sidebar-bg: #1a233a; /* Dark Blue from sidebar */
+            --bg-body: #edf2f7; /* Light Blue/Gray body */
+            --card-white: #ffffff;
+            --teal-accent: #26a69a; /* Teal from buttons */
+            --text-main: #333;
+            --text-light: #888;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* Dashboard Layout */
+        .container { display: flex; width: 100%; }
+        
+        /* Main Area */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .header-section h1 { font-size: 24px; margin: 0; font-weight: 600; }
+
+        /* Vitals Grid Layout */
+        .vitals-container-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-white);
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        /* Risk Gauge Meter Box */
+        .gauge-card { text-align: center; }
+        .gauge-wrapper { position: relative; width: 230px; margin: 0 auto; }
+        .gauge-value {
+            position: absolute; top: 70%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Factors & Logs Section */
+        .factors-list {
+            text-align: left;
+            margin-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 15px;
+        }
+        .factors-list strong { font-size: 14px; }
+        .factors-list ul { font-size: 13px; color: #555; padding-left: 20px; margin-top: 5px; line-height: 1.8; }
+
+        /* Weekly Vitals Chart Box */
+        .chart-card { min-height: 300px; }
+
+        /* Bottom Small Stats Cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            border-bottom: 5px solid var(--teal-accent); /* Green/Teal accent */
+        }
+
+        .stat-card h4 { margin: 0; color: #666; font-size: 13px; text-transform: uppercase; }
+        .stat-card .value { font-size: 26px; font-weight: 600; margin: 10px 0; }
+        .stat-card p { margin: 0; font-size: 12px; color: #4db6ac; }
+
+        /* Action Buttons */
+        .action-buttons {
+            margin-top: 25px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            background: var(--teal-accent);
+            color: white;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .btn-secondary { background: #546e7a; } /* Grayish button */
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="main-content">
+        <div class="header-section">
+            <h1>Brain Stroke Risk Assessment</h1>
+            <div style="font-size: 14px; color: var(--teal-accent); background: #e0f2f1; padding: 5px 15px; border-radius: 20px;">
+                User: {{ session.get('user_name', 'Minal') }}
+            </div>
+        </div>
+
+        <div class="vitals-container-grid">
+            <div class="card gauge-card">
+                <h3 style="text-align: left; margin-top: 0;">Stroke Risk Index (Vitals-based)</h3>
+                <p style="text-align: left; font-size: 13px; color: var(--text-light);">Your assessment data is current.</p>
+                
+                <div class="gauge-wrapper">
+                    <canvas id="riskGauge"></canvas>
+                    <div class="gauge-value">
+                        <h2 style="margin: 0;">{{ category }} ({{ probability }}%)</h2>
+                        <p style="margin: 0; font-weight: bold; color: {% if probability > 60 %}red{% else %}orange{% endif %}; font-size: 14px;">
+                            {{ "High Risk" if probability > 60 else "Medium Risk" }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="factors-list">
+                    <strong>Stroke Risk Index Factors:</strong>
+                    <ul>
+                        <li>Hypertension (Moderate)</li>
+                        <li>Heart Rate: {{ vitals.get('heart_rate') }} bpm</li>
+                        <li>Blood Sugar: {{ vitals.get('avg_glucose_level') }} mg/dL</li>
+                    </ul>
+                </div>
+
+                <div style="margin-top: 15px; font-size: 13px; text-align: left; color: #666;">
+                    <strong>Recent Log Entries:</strong>
+                    <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                        <span>Vitals Log</span> <span>1 hour ago</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Risk Check</span> <span>Just now ✅</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card chart-card">
+                <h3>Weekly Vitals Trends</h3>
+                <div style="height: 300px;">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <h4>💓 Heart Rate (HR)</h4>
+                <div class="value">{{ vitals.get('heart_rate', '--') }} <span style="font-size: 14px; color: #999;">bpm</span></div>
+                <p>Status: Normal</p>
+            </div>
+            <div class="stat-card" style="border-color: #ff7043;">
+                <h4>🌡️ Blood Sugar</h4>
+                <div class="value">{{ vitals.get('avg_glucose_level', '--') }} <span style="font-size: 14px; color: #999;">mg/dL</span></div>
+                <p>Status: Stable</p>
+            </div>
+            <div class="stat-card" style="border-color: #42a5f5;">
+                <h4>⚖️ BMI Score</h4>
+                <div class="value">{{ vitals.get('bmi', '--') }}</div>
+                <p>Status: Healthy</p>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn" onclick="window.location.href='/'">Log New Vitals</button>
+            <button class="btn btn-secondary">View Full Report</button>
+            <div class="report-actions" style="margin-top: 40px; text-align: center; border-top: 2px solid #eee; padding-top: 20px;">
+    <button onclick="window.location.href='/vitals'" class="btn btn-secondary" style="background-color: #546e7a; margin-right: 10px;">
+        ⬅ Back to Assessment
+    </button>
+    
+    <button onclick="window.print()" class="btn btn-primary">
+        📥 Download PDF Report
+    </button>
+</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Weekly Trend Chart (Chart.js)
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            // Python मधून आलेला Weekly डेटा इथे रेंडर होईल (Dates, HR, Sugar)
+            labels: {{ dates|tojson }},
+            datasets: [{
+                label: 'Heart Rate',
+                data: {{ hr_data|tojson }},
+                borderColor: '#4db6ac', // Teal
+                backgroundColor: 'rgba(77, 182, 172, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Blood Sugar',
+                data: {{ gl_data|tojson }},
+                borderColor: '#ff7043', // Orange
+                fill: false,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top' } }
+        }
+    });
+
+    // 2. Risk Gauge Chart
+    const gaugeCtx = document.getElementById('riskGauge').getContext('2d');
+    new Chart(gaugeCtx, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [{{ probability }}, 100 - {{ probability }}],
+                backgroundColor: [
+                    {% if probability > 60 %}'#ef4444'{% elif probability > 40 %}'#fbbf24'{% else %}'#10b981'{% endif %}, 
+                    '#e0e0e0'
+                ],
+                borderWidth: 0,
+                circumference: 180,
+                rotation: 270,
+                cutout: '85%'
+            }]
+        },
+        options: {
+            aspectRatio: 1.5,
+            plugins: { legend: { display: false }, tooltip: { enabled: false } }
+        }
+    });
+</script>
+
+</body>
+</html>

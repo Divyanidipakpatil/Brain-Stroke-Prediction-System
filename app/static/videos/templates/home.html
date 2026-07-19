@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroScan | Smart Stroke Prediction</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+html{
+scroll-behavior:smooth;
+}
+
+body{
+background:#0a0a0a;
+color:white;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+/* HERO BACKGROUND */
+.hero-bg{
+background:
+linear-gradient(rgba(0,0,0,0.35),rgba(0,0,0,0.55)),
+url('https://images.unsplash.com/photo-1559757175-5700dde675bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
+}
+
+/* NAVBAR */
+.navbar{
+background:rgba(0,0,0,0.65);
+backdrop-filter:blur(12px);
+}
+
+/* CARDS */
+.dark-card{
+background:#141414;
+border:1px solid #262626;
+transition:0.4s;
+}
+
+.dark-card:hover{
+transform:translateY(-8px);
+box-shadow:0 0 20px rgba(34,211,238,0.2);
+}
+
+/* BUTTON */
+.glow-btn:hover{
+box-shadow:0 0 25px rgba(34,211,238,0.7);
+}
+
+/* ANIMATION */
+.fade-up{
+animation:fadeup 1.2s ease;
+}
+
+@keyframes fadeup{
+from{
+opacity:0;
+transform:translateY(40px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar fixed top-0 left-0 w-full z-50 shadow-md">
+<div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+
+<h1 class="text-2xl font-bold text-cyan-400 flex items-center gap-2">
+<i class="fas fa-brain"></i> NeuroScan
+</h1>
+
+<div class="hidden md:flex gap-8 font-semibold text-white">
+<a href="/" class="hover:text-cyan-400 transition">Home</a>
+<a href="#features" class="hover:text-cyan-400 transition">Features</a>
+<a href="#how" class="hover:text-cyan-400 transition">How It Works</a>
+</div>
+
+<div class="flex gap-3">
+{% if name %}
+<a href="/vitals" class="bg-cyan-500 text-black px-5 py-2 rounded-lg font-bold hover:bg-cyan-400 transition">
+Dashboard
+</a>
+
+<a href="/logout" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+<i class="fas fa-power-off"></i>
+</a>
+{% else %}
+
+<a href="/login" class="bg-cyan-500 text-black px-5 py-2 rounded-lg font-bold hover:bg-cyan-400 transition">
+Login
+</a>
+
+<a href="/register" class="bg-white text-black px-5 py-2 rounded-lg font-bold hover:bg-gray-200 transition">
+Register
+</a>
+
+{% endif %}
+</div>
+
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero-bg min-h-screen flex items-center pt-24">
+<div class="max-w-7xl mx-auto px-6 text-center">
+
+<div class="fade-up max-w-4xl mx-auto">
+
+<h1 class="text-5xl md:text-7xl font-extrabold leading-tight mb-8">
+Predict Stroke <br>
+<span class="text-cyan-400">Before It Happens</span>
+</h1>
+
+<p class="text-lg md:text-2xl text-gray-200 mb-10 leading-relaxed">
+Advanced AI powered brain stroke prediction using wearable device data,
+health vitals and intelligent machine learning analysis.
+</p>
+
+<div class="flex flex-wrap justify-center gap-5">
+{% if name %}
+
+<a href="/vitals"
+class="glow-btn bg-cyan-500 text-black px-8 py-4 rounded-xl font-bold hover:bg-cyan-400 transition">
+Go To Dashboard
+</a>
+
+{% else %}
+
+<a href="/login"
+class="glow-btn bg-cyan-500 text-black px-8 py-4 rounded-xl font-bold hover:bg-cyan-400 transition">
+Start Prediction
+</a>
+
+<a href="#features"
+class="border border-cyan-400 text-cyan-300 px-8 py-4 rounded-xl font-bold hover:bg-cyan-400 hover:text-black transition">
+Explore Features
+</a>
+
+{% endif %}
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="py-24 bg-black">
+<div class="max-w-7xl mx-auto px-6">
+
+<div class="text-center mb-16">
+<h2 class="text-4xl font-bold mb-4 text-white">Why Choose NeuroScan?</h2>
+<p class="text-gray-400 text-lg">Modern healthcare powered by artificial intelligence</p>
+</div>
+
+<div class="grid md:grid-cols-3 gap-8">
+
+<div class="dark-card p-8 rounded-2xl">
+<i class="fas fa-robot text-4xl text-cyan-400 mb-5"></i>
+<h3 class="text-2xl font-bold mb-3">AI Prediction</h3>
+<p class="text-gray-400">
+Smart ML models predict future stroke risk using medical patterns.
+</p>
+</div>
+
+<div class="dark-card p-8 rounded-2xl">
+<i class="fas fa-heart-pulse text-4xl text-green-400 mb-5"></i>
+<h3 class="text-2xl font-bold mb-3">Wearable Sync</h3>
+<p class="text-gray-400">
+Connect smartwatch for live data collection.
+</p>
+</div>
+
+<div class="dark-card p-8 rounded-2xl">
+<i class="fas fa-file-medical text-4xl text-red-400 mb-5"></i>
+<h3 class="text-2xl font-bold mb-3">Health Reports</h3>
+<p class="text-gray-400">
+Generate detailed reports with charts and risk explanation.
+</p>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="py-24 bg-[#0f0f0f]">
+<div class="max-w-7xl mx-auto px-6">
+
+<div class="text-center mb-16">
+<h2 class="text-4xl font-bold text-white mb-4">How It Works</h2>
+</div>
+
+<div class="grid md:grid-cols-4 gap-8 text-center">
+
+<div>
+<div class="w-16 h-16 mx-auto bg-cyan-500 text-black rounded-full flex items-center justify-center text-2xl font-bold mb-4">1</div>
+<h4 class="font-bold text-xl mb-2">Register</h4>
+<p class="text-gray-400">Create your secure account.</p>
+</div>
+
+<div>
+<div class="w-16 h-16 mx-auto bg-cyan-500 text-black rounded-full flex items-center justify-center text-2xl font-bold mb-4">2</div>
+<h4 class="font-bold text-xl mb-2">Enter Data</h4>
+<p class="text-gray-400">Provide health vitals or wearable data.</p>
+</div>
+
+<div>
+<div class="w-16 h-16 mx-auto bg-cyan-500 text-black rounded-full flex items-center justify-center text-2xl font-bold mb-4">3</div>
+<h4 class="font-bold text-xl mb-2">AI Analysis</h4>
+<p class="text-gray-400">Model processes risk instantly.</p>
+</div>
+
+<div>
+<div class="w-16 h-16 mx-auto bg-cyan-500 text-black rounded-full flex items-center justify-center text-2xl font-bold mb-4">4</div>
+<h4 class="font-bold text-xl mb-2">Results</h4>
+<p class="text-gray-400">Receive prediction & suggestions.</p>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="py-24 bg-cyan-600 text-center">
+<div class="max-w-4xl mx-auto px-6">
+
+<h2 class="text-5xl font-bold mb-6 text-black">Your Health Matters</h2>
+<p class="text-xl mb-8 text-black">
+Start monitoring stroke risk today with NeuroScan.
+</p>
+
+<a href="/login"
+class="bg-black text-white px-10 py-4 rounded-xl font-bold hover:bg-gray-900 transition">
+Get Started
+</a>
+
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-black border-t border-gray-800 text-gray-400 py-10 text-center">
+<h3 class="text-2xl text-white font-bold mb-3">NeuroScan</h3>
+<p class="mb-2">AI Based Stroke Prediction System</p>
+<p>&copy; 2026 All Rights Reserved</p>
+</footer>
+
+</body>
+</html>

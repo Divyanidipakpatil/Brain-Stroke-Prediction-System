@@ -1,0 +1,604 @@
+<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    .special-recommendations {
+        padding: 60px 20px;
+        background: #f8fafc;
+        font-family: 'Poppins', sans-serif;
+    }
+    .section-title {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+    .section-title h2 { 
+        font-size: 2.5rem; 
+        font-weight: 700; 
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+    .section-title p { color: #64748b; font-size: 1.1rem; }
+    
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        max-width: 1240px;
+        margin: 0 auto;
+    }
+
+    .recommendation-card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+    .recommendation-card:hover { 
+        transform: translateY(-10px);
+        box-shadow: 0 20px 30px rgba(0,0,0,0.08);
+    }
+
+    .card-header {
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .card-header i { font-size: 2rem; }
+    .card-header h3 { font-size: 1.25rem; font-weight: 600; color: #1e293b; margin: 0; }
+
+    .content-body { padding: 25px; }
+    
+    .param-badge {
+        background: #f1f5f9;
+        color: #475569;
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+
+    .plan-group { margin-bottom: 20px; }
+    .plan-item {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: #334155;
+    }
+    .plan-item i { margin-top: 4px; font-size: 1rem; }
+    .icon-diet { color: #10b981; }
+    .icon-ex { color: #f59e0b; }
+    .icon-yoga { color: #8b5cf6; }
+
+    .video-section {
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px dashed #e2e8f0;
+    }
+    .video-label { font-size: 0.8rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 12px; display: block; }
+    
+    .video-flex {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .video-btn {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        padding: 8px 14px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        transition: 0.2s;
+        color: #475569;
+    }
+    .video-btn:hover { background: #1e293b; color: white; border-color: #1e293b; }
+    .video-btn i { color: #ef4444; }
+</style>
+
+<section class="special-recommendations">
+    <div class="section-title">
+        <h2>Personalized Action Plan</h2>
+        <p>Expert-backed maintenance steps based on your health data</p>
+    </div>
+
+    <div class="grid-container">
+        
+        <div class="recommendation-card">
+            <div class="card-header" style="background: #ecfdf5;">
+                <i class="fas fa-weight" style="color: #10b981;"></i>
+                <h3>Weight Management</h3>
+            </div>
+            <div class="content-body">
+                <div class="param-badge">Current BMI: {{ bmi }}</div>
+                <div class="plan-group">
+                    <div class="plan-item"><i class="fas fa-utensils icon-diet"></i> <span><b>Diet:</b> Focus on portion control and fiber-rich leafy greens.</span></div>
+                    <div class="plan-item"><i class="fas fa-running icon-ex"></i> <span><b>Exercise:</b> 30 mins of moderate aerobic activity daily.</span></div>
+                    <div class="plan-item"><i class="fas fa-spa icon-yoga"></i> <span><b>Yoga:</b> Trikonasana and Plank for core metabolic health.</span></div>
+                </div>
+                <div class="video-section">
+                    <span class="video-label">Recommended Videos:</span>
+                    <div class="video-flex">
+                        <button class="video-btn"><i class="fab fa-youtube"></i> Diet Guide</button>
+                        <button class="video-btn"><i class="fab fa-youtube"></i> Yoga Routine</button>
+                        <button class="video-btn"><i class="fab fa-youtube"></i> Fat Loss</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="recommendation-card">
+            <div class="card-header" style="background: #fef2f2;">
+                <i class="fas fa-tint" style="color: #ef4444;"></i>
+                <h3>Vitals & Glucose</h3>
+            </div>
+            <div class="content-body">
+                <div class="param-badge">Glucose: {{ avg_glucose_level }} mg/dL</div>
+                <div class="plan-group">
+                    <div class="plan-item"><i class="fas fa-leaf icon-diet"></i> <span><b>Diet:</b> Low glycemic index foods like oats and legumes.</span></div>
+                    <div class="plan-item"><i class="fas fa-shoe-prints icon-ex"></i> <span><b>Exercise:</b> 10-minute brisk walk after every meal.</span></div>
+                    <div class="plan-item"><i class="fas fa-wind icon-yoga"></i> <span><b>Yoga:</b> Mandukasana for pancreatic stimulation.</span></div>
+                </div>
+                <div class="video-section">
+                    <span class="video-label">Expert Tutorials:</span>
+                    <div class="video-flex">
+                        <button class="video-btn"><i class="fab fa-youtube"></i> Sugar Control</button>
+                        <button class="video-btn"><i class="fab fa-youtube"></i> BP Yoga</button>
+                        <button class="video-btn"><i class="fab fa-youtube"></i> Meal Prep</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="recommendation-card">
+            <div class="card-header" style="background: #fffbeb;">
+                <i class="fas fa-heartbeat" style="color: #f59e0b;"></i>
+                <h3>Cardiac Fitness</h3>
+            </div>
+            <div class="content-body">
+                <div class="param-badge">Heart Rate: {{ heart_rate }} bpm | Steps: {{ steps }}</div>
+                <div class="plan-group">
+                    <div class="plan-item"><i class="fas fa-seedling icon-diet"></i> <span><b>Diet:</b> Heart-healthy Omega-3 fats (Walnuts, Seeds).</span></div>
+                    <div class="plan-item"><i class="fas fa-hiking icon-ex"></i> <span><b>Exercise:</b> Target 10,000 steps to improve endurance.</span></div>
+                    <div class="plan-item"><i class="fas fa-om icon-yoga"></i> <span><b>Yoga:</b> Gomukhasana and Deep Breathing (Pranayam).</span></div>
+                </div>
+                <div class="video-section">
+                    <span class="video-label">Fitness Library:</span>
+                    <div class="video-flex">
+                        <button class="video-btn"><i class="fab fa-youtube"></i> Heart Yoga</button>
+                        <button class="video-btn"><i class="fab fa-youtube"></i> Cardio Home</button>
+                        <button class="video-btn"><i class="fab fa-youtube"></i> Stamina</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="recommendation-card">
+            <div class="card-header" style="background: #f5f3ff;">
+                <i class="fas fa-moon" style="color: #8b5cf6;"></i>
+                <h3>Sleep & Recovery</h3>
+            </div>
+            <div class="content-body">
+                <div class="param-badge">Sleep: {{ sleep_hours }} hrs | Alcohol: {{ alcohol_intake }}</div>
+                <div class="plan-group">
+                    <div class="plan-item"><i class="fas fa-coffee icon-diet" style="color:#6366f1;"></i> <span><b>Diet:</b> Avoid caffeine 6 hours before bedtime.</span></div>
+                    <div class="plan-item"><i class="fas fa-bed icon-ex" style="color:#6366f1;"></i> <span><b>Exercise:</b> Light stretching or mobility work at night.</span></div>
+                    <div class="plan-item"><i class="fas fa-brain icon-yoga" style="color:#6366f1;"></i> <span><b>Yoga:</b> Yoga Nidra and Shavasana for deep rest.</span></div>
+                </div>
+                <div class="video-section">
+                    <span class="video-label">Recovery Videos:</span>
+                    <div class="video-flex">
+                        <button class="video-btn"><i class="fab fa-youtube"></i> Meditation</button>
+                        <button class="video-btn"><i class="fab fa-youtube"></i> Sleep Yoga</button>
+                        <button class="video-btn"><i class="fab fa-youtube"></i> Detox Tips</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+-->
+
+
+
+
+<!--
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+body {
+    background: #f1f5f9;
+    font-family: 'Poppins', sans-serif;
+    padding: 20px;
+}
+
+/* HEADER */
+.health-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* SCROLL */
+.scroll-container {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+/* CARD */
+.card {
+    min-width: 280px;
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    flex-shrink: 0;
+}
+
+/* TITLE */
+.card h3 {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+/* VALUE */
+.value {
+    background: #eef2ff;
+    padding: 6px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+/* LIST */
+.card ul {
+    font-size: 13px;
+    margin-bottom: 10px;
+    padding-left: 18px;
+}
+
+/* VIDEO */
+iframe, video {
+    width: 100%;
+    height: 150px;
+    border-radius: 10px;
+}
+</style>
+
+<div class="health-header">
+    <h2>Personalized Health Suggestions</h2>
+</div>
+
+<div class="scroll-container">
+
+
+<div class="card">
+    <h3>🥗 Diet Quality</h3>
+    <div class="value">
+        {% if avg_glucose_level > 140 %}
+            High Sugar
+        {% else %}
+            Balanced Diet
+        {% endif %}
+    </div>
+    <ul>
+        <li>Eat green vegetables & fruits</li>
+        <li>Avoid sugar & processed food</li>
+        <li>Drink 2–3L water daily</li>
+    </ul>
+
+    
+    <video controls>
+        <source src="{{ url_for('static', filename='videos/diet.mp4') }}" type="video/mp4">
+    </video>
+</div>
+
+<div class="card">
+    <h3>🎂 Age Factor</h3>
+    <div class="value">Age: {{ age }}</div>
+    <ul>
+        <li>Maintain regular checkups</li>
+        <li>Do light cardio exercises</li>
+        <li>Stay mentally active</li>
+    </ul>
+    <iframe src="https://www.youtube.com/embed/5qap5aO4i9A"></iframe>
+</div>
+
+<div class="card">
+    <h3>😴 Sleep</h3>
+    <div class="value">{{ sleep_hours }} hrs</div>
+    <ul>
+        <li>Sleep 7–8 hours daily</li>
+        <li>Avoid phone before bed</li>
+        <li>Follow fixed sleep schedule</li>
+    </ul>
+    <iframe src="https://www.youtube.com/embed/inpok4MKVLM"></iframe>
+</div>
+
+<div class="card">
+    <h3>⚖ Weight Management</h3>
+    <div class="value">BMI: {{ bmi }}</div>
+    <ul>
+        {% if bmi > 25 %}
+            <li>Reduce calories</li>
+            <li>Do cardio + walking</li>
+        {% else %}
+            <li>Maintain balanced diet</li>
+            <li>Strength training</li>
+        {% endif %}
+    </ul>
+    <iframe src="https://www.youtube.com/embed/UItWltVZZmE"></iframe>
+</div>
+
+
+<div class="card">
+    <h3>🍷 Alcohol</h3>
+    <div class="value">{{ alcohol_intake }}</div>
+    <ul>
+        <li>Limit alcohol intake</li>
+        <li>Stay hydrated</li>
+        <li>Try detox drinks</li>
+    </ul>
+    <iframe src="https://www.youtube.com/embed/kXYiU_JCYtU"></iframe>
+</div>
+
+
+<div class="card">
+    <h3>❤️ Heart Rate</h3>
+    <div class="value">{{ heart_rate }} bpm</div>
+    <ul>
+        <li>Practice deep breathing</li>
+        <li>Avoid stress</li>
+        <li>Daily walking</li>
+    </ul>
+    <iframe src="https://www.youtube.com/embed/odADwWzHR24"></iframe>
+</div>
+
+<div class="card">
+    <h3>🩺 Blood Pressure</h3>
+    <div class="value">Monitor Regularly</div>
+    <ul>
+        <li>Reduce salt intake</li>
+        <li>Do yoga daily</li>
+        <li>Avoid junk food</li>
+    </ul>
+    <iframe src="https://www.youtube.com/embed/4pKly2JojMw"></iframe>
+</div>
+
+<div class="card">
+    <h3>🏋 Workout</h3>
+    <div class="value">Daily Activity</div>
+    <ul>
+        <li>30 mins exercise daily</li>
+        <li>Stretching is important</li>
+        <li>Mix cardio + strength</li>
+    </ul>
+    <iframe src="https://www.youtube.com/embed/UBMk30rjy0o"></iframe>
+</div>
+
+
+<div class="card">
+    <h3>🚶 Steps</h3>
+    <div class="value">{{ steps }} steps</div>
+    <ul>
+        <li>Target 8k–10k steps</li>
+        <li>Use step tracker</li>
+        <li>Walk after meals</li>
+    </ul>
+    <iframe src="https://www.youtube.com/embed/ml6cT4AZdqI"></iframe>
+</div>
+
+</div>
+
+-->
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),
+                url('https://images.unsplash.com/photo-1505751172876-fa1923c5c528');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 20px;
+}
+
+/* HEADER */
+.health-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+.health-header h2 {
+    font-size: 30px;
+    font-weight: 600;
+}
+.health-header p {
+    opacity: 0.8;
+}
+
+/* HORIZONTAL SCROLL */
+.scroll-container {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+/* SCROLLBAR */
+.scroll-container::-webkit-scrollbar {
+    height: 8px;
+}
+.scroll-container::-webkit-scrollbar-thumb {
+    background: #3b82f6;
+    border-radius: 10px;
+}
+
+/* CARD (GLASS EFFECT) */
+.card {
+    min-width: 300px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 18px;
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px) scale(1.02);
+}
+
+/* TITLE */
+.card h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 17px;
+    margin-bottom: 12px;
+}
+
+/* LIST */
+.card ul {
+    font-size: 13px;
+    padding-left: 18px;
+    margin-bottom: 12px;
+}
+.card ul li {
+    margin-bottom: 6px;
+}
+
+/* VIDEO */
+video {
+    width: 100%;
+    height: 160px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+/* ICON COLORS */
+.icon-green { color: #10b981; }
+.icon-blue { color: #3b82f6; }
+.icon-purple { color: #8b5cf6; }
+.icon-yellow { color: #f59e0b; }
+.icon-red { color: #ef4444; }
+
+</style>
+
+<div class="health-header">
+    <h2>✨ Personalized Health Suggestions</h2>
+    <p>Swipe horizontally to explore your health tips</p>
+</div>
+
+<div class="scroll-container">
+
+<!-- DIET -->
+<div class="card">
+    <h3><i class="fas fa-apple-alt icon-green"></i> Diet Quality</h3>
+    <ul>
+        <li>Eat fruits & leafy vegetables</li>
+        <li>Avoid junk & sugary food</li>
+        <li>Drink 2–3L water daily</li>
+    </ul>
+    <video controls>
+        <source src="{{ url_for('static', filename='videos/diet.mp4') }}">
+    </video>
+</div>
+
+<!-- AGE -->
+<div class="card">
+    <h3><i class="fas fa-user icon-blue"></i> Age Care</h3>
+    <ul>
+        <li>Regular health checkups</li>
+        <li>Do light exercise daily</li>
+        <li>Stay mentally active</li>
+    </ul>
+    <video controls>
+        <source src="{{ url_for('static', filename='videos/age.mp4') }}">
+    </video>
+</div>
+
+<!-- SLEEP -->
+<div class="card">
+    <h3><i class="fas fa-moon icon-purple"></i> Sleep</h3>
+    <ul>
+        <li>Sleep 7–8 hours daily</li>
+        <li>Avoid mobile before bed</li>
+        <li>Maintain routine</li>
+    </ul>
+    <video controls>
+        <source src="{{ url_for('static', filename='videos/sleep.mp4') }}">
+    </video>
+</div>
+
+<!-- WEIGHT -->
+<div class="card">
+    <h3><i class="fas fa-weight icon-yellow"></i> Weight Management</h3>
+    <ul>
+        <li>Follow balanced diet</li>
+        <li>Exercise regularly</li>
+        <li>Track calories</li>
+    </ul>
+    <video controls>
+        <source src="{{ url_for('static', filename='videos/weightloss.mp4') }}">
+    </video>
+</div>
+
+<!-- HEART -->
+<div class="card">
+    <h3><i class="fas fa-heart icon-red"></i> Heart Care</h3>
+    <ul>
+        <li>Avoid stress & anxiety</li>
+        <li>Practice breathing exercises</li>
+        <li>Walk daily</li>
+    </ul>
+    <video controls>
+        <source src="{{ url_for('static', filename='videos/heart.mp4') }}">
+    </video>
+</div>
+
+<!-- STEPS -->
+<div class="card">
+    <h3><i class="fas fa-walking icon-blue"></i> Daily Activity</h3>
+    <ul>
+        <li>Walk 8k–10k steps</li>
+        <li>Avoid long sitting</li>
+        <li>Stay active</li>
+    </ul>
+    <video controls>
+        <source src="{{ url_for('static', filename='videos/steps.mp4') }}">
+    </video>
+</div>
+
+
+<!-- ALCOHOL -->
+<div class="card">
+    <h3><i class="fas fa-wine-glass-alt icon-red"></i> Alcohol Control</h3>
+    <ul>
+        <li>Limit alcohol consumption</li>
+        <li>Drink plenty of water</li>
+        <li>Replace with healthy drinks (juice, coconut water)</li>
+        <li>Avoid drinking on empty stomach</li>
+    </ul>
+    <video controls>
+        <source src="{{ url_for('static', filename='videos/alco.mp4') }}">
+    </video>
+</div>
+</div>

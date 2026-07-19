@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Settings | NeuroScan</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary-blue: #4a6cf7;
+            --emergency-red: #d32f2f;
+            --bg-gray: #f7fafc;
+            --card-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+         /* 1. Purn Interface chya background la image denya saathi */
+body {
+    background: linear-gradient(rgba(10, 20, 40, 0.7), rgba(10, 20, 40, 0.7)), 
+                url('https://images.unsplash.com/photo-1559757175-5700dde675bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    height: 100vh;
+    margin: 0;
+    overflow-x: hidden; /* Scroll allow karnyasaathi 'hidden' kadhu shaktes */
+}
+
+/* 2. Saglya White Cards la "Glassy" banvanya saathi */
+.header-container, .card, .vitals-card, .container, .sidebar {
+    /* Background la transparent white kara */
+    background: rgba(255, 255, 255, 0.1) !important; 
+    
+    /* Blur effect (Glassmorphism) */
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    
+    /* Borders thodya bright theva jyamule glass look disel */
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 16px;
+    
+    /* Shadow ani Text color */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    color: white !important; 
+}
+
+/* 3. Text vachayla tras hou naye mhanun he add kara */
+h1, h2, h3, p, span, label {
+    color: white !important;
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+}
+/* Emergency Dashboard cha main container */
+.emergency-container {
+    background-color: #0f172a !important; /* Deep Navy Blue */
+    padding: 20px;
+    border-radius: 15px;
+}
+
+/* Alert message sathi (Ambulance Requested text) */
+.alert-text {
+    color: #38bdf8 !important; /* Light Sky Blue color jyamule to highlight hoil */
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-gray); margin: 0; display: flex; }
+        .sidebar { width: 250px; background: #fff; height: 100vh; border-right: 1px solid #e2e8f0; padding: 20px; position: fixed; }
+        .main-content { margin-left: 250px; flex-grow: 1; padding: 30px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: var(--card-shadow); margin-bottom: 20px; }
+        .protocol-card { display: flex; align-items: center; gap: 20px; }
+        .protocol-card i { color: var(--primary-blue); font-size: 40px; }
+        .status-ready { display: flex; align-items: center; gap: 10px; color: #28a745; font-weight: 600; margin: 15px 0; }
+        .dot { height: 12px; width: 12px; background: #28a745; border-radius: 50%; box-shadow: 0 0 8px #28a745; }
+        .btn-test { background: #1a202c; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; width: 100%; }
+        .contacts-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .contacts-table th { text-align: left; color: #718096; padding: 12px; border-bottom: 2px solid #edf2f7; }
+        .contacts-table td { padding: 12px; border-bottom: 1px solid #f7fafc; }
+        .btn-save { background: var(--primary-blue); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; }
+        .footer-btns { display: flex; justify-content: center; gap: 15px; margin-top: 30px; }
+        .action-hub-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: none; align-items: center; justify-content: center; z-index: 9999; }
+        .action-hub-container { background: #f4f7f6; width: 90%; max-width: 1100px; border-radius: 15px; overflow: hidden; }
+        .hub-header { background: #c53030; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
+        .hub-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; padding: 25px; }
+        .hub-card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
+        /* Sidebar Header kiwa Dashboard Title sathi */
+.header-container h2, .sidebar h2, .emergency-settings-title {
+    color: #ffffff !important; /* Pure White */
+    font-weight: 600 !important;
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5) !important; /* Text highlight honyasathi shadow */
+    z-index: 1001; /* Text varti disnyasathi */
+    position: relative;
+}
+        /* Overlay Background */
+ /* Juna background: rgba(255, 255, 255, 0.95) kadha */
+.action-hub-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(10, 20, 40, 0.6) !important; /* Ekdam fikat dark shade image disnyasathi */
+    backdrop-filter: blur(0px); /* Image la thoda blur karel jyamule focus modal var rahil */
+    display: none; align-items: center;
+    justify-content: center; z-index: 2000;
+}
+
+/* Modal Container */
+.action-hub-modal {
+    background: rgba(255, 255, 255, 0.15) !important; /* Glassy Look */
+    backdrop-filter: blur(0px);
+    width: 90%; max-width: 1050px;
+    border-radius: 12px; overflow: hidden; 
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+/* Header Alert Style */
+.hub-header-critical {
+    background: #c53030; rgba(255, 255, 255, 0.95); padding: 15px 25px;
+    display: flex; justify-content: space-between; align-items: center;
+}
+
+.pulse-icon { animation: pulse 1.5s infinite; font-size: 24px; }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+/* Grid System */
+.hub-content-grid {
+    display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 15px; padding: 20px;
+}
+.hub-card {
+    background: rgba(255, 255, 255, 0.1) !important; /* Transparent cards */
+    backdrop-filter: blur(10px);
+    padding: 15px; border-radius: 10px;
+    margin-bottom: 15px; 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white !important; /* Text white theva */
+}
+
+/* Card title sathi */
+.hub-card h3, .hub-card p, .hub-card li {
+    color: white !important;
+}
+/* Specific Elements */
+.btn-call-108 {
+    background: #1a202c; color:rgba(255, 255, 255, 0.95); width: 100%; padding: 12px;
+    border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
+}
+
+.txt-success { color: #2d8a4e; font-weight: bold; font-size: 14px; margin-bottom: 8px; }
+
+.hospital-list { list-style: none; padding: 0; font-size: 13px; }
+.hospital-list li { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; }
+
+.fast-img { width: 100%; border-radius: 5px; margin: 10px 0; }
+/* अ‍ॅम्ब्युलन्स स्टेटस स्टाइल */
+.searching {
+    color: #e67e22; /* Orange */
+    font-weight: bold;
+}
+
+.dispatched {
+    color: #27ae60 !important; /* Green */
+    font-weight: bold;
+}
+
+/* स्कॅनिंग अ‍ॅनिमेशन */
+.map-placeholder {
+    position: relative;
+    height: 80px;
+    background: #edf2f7;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+
+@keyframes scan {
+    0% { top: 0; }
+    100% { top: 100%; }
+}
+
+.pulse-red {
+    font-size: 24px;
+    color: #e74c3c;
+    animation: pulse-icon 1.5s infinite;
+}
+
+@keyframes pulse-icon {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.btn-call-108:active {
+    transform: scale(0.95);
+}
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h3>NeuroScan</h3>
+        <hr>
+        <p><a href="/profile" style="text-decoration:none; color:#333;"><i class="fas fa-user"></i> Profile</a></p>
+        <p style="color:var(--primary-blue); font-weight:600;"><i class="fas fa-ambulance"></i> Emergency Settings</p>
+    </div>
+
+    <main class="main-content">
+        <div class="page-header">
+                        <h2>Emergency Settings</h2>
+            <div style="background:var(--primary-blue); color:white; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">U</div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="left-col">
+                <div class="card protocol-card">
+                    <i class="fas fa-shield-heart"></i>
+                    <div>
+                        <h3 style="margin:0;">Emergency Protocol Configuration</h3>
+                        <p style="color:#718096; margin:5px 0 0 0;">Setup trusted contacts for response.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Add New Contact</h3>
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <input type="text" id="contact_name" placeholder="Contact Name" style="padding: 10px; border-radius: 5px; border: 1px solid #ddd; flex: 1;">
+                        <input type="text" id="contact_phone" placeholder="Phone Number (+91...)" style="padding: 10px; border-radius: 5px; border: 1px solid #ddd; flex: 1;">
+                    </div>
+                    <button class="btn-save" onclick="saveChanges()">Save & Send Verification</button>
+             </div>
+             <div id="actionHubOverlay" class="action-hub-overlay" style="display: none;">
+    <div class="action-hub-modal">
+        <div class="hub-header-critical">
+            <div class="header-main">
+                <i class="fas fa-exclamation-triangle pulse-icon"></i>
+                <div>
+                    <h2>High Stroke Risk Detected</h2>
+                    <span class="sub-text">(Action Required Immediately)</span>
+                </div>
+            </div>
+            <button class="close-hub-btn" onclick="toggleActionHub(false)">×</button>
+        </div>
+        <div class="hub-card primary-action">
+    <button class="btn-call-108" onclick="handleAmbulanceCall()">
+        <i class="fas fa-ambulance"></i> Contact Emergency (108/Ambulance)
+    </button>
+
+    <div class="status-box">
+        <p id="ambText">AMBULANCE REQUESTED: <span id="ambStatus" class="searching">Searching...</span></p>
+        
+        <div class="dispatch-simulation">
+            <div id="mapIcon" class="map-placeholder">
+                <i class="fas fa-map-marker-alt pulse-red"></i>
+                <div class="scanner"></div> </div>
+            <p class="sub-text">Simulated 108 Dispatch (Requires API for real)</p>
+        </div>
+    </div>
+</div>
+
+        <div class="hub-content-grid">
+            <div class="hub-column">
+                <div class="hub-card primary-action">
+                   <button type="button" id="callBtn" class="btn-call-108" onclick="handleEmergencyCall(event)">
+    <i class="fas fa-ambulance"></i> Contact Emergency (108)
+</button>
+                    <div class="status-box">
+                        <p>AMBULANCE: <span id="ambStatus" class="loading-text">Searching...</span></p>
+                        <div class="map-preview">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <p>Live Dispatch Simulation</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="hub-card hospital-quick">
+                    <p><strong>City General Stroke Center</strong></p>
+                    <p><i class="fas fa-clock"></i> 6 min drive</p>
+                  <button onclick="openGoogleMap()" class="btn-call-108" style="background: #1a73e8; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+        <i class="fas fa-map-marker-alt"></i> Open Map
+    </button>
+    
+
+<div id="map-section" style="display:none; margin-top:20px;">
+    <h4>Nearby Hospitals</h4>
+    <div id="map" style="height: 400px; width: 100%; border-radius: 10px;"></div>
+</div>
+                    
+                </div>
+            </div>
+
+            <div class="hub-column">
+                <div class="hub-card">
+                    <h3><i class="fas fa-hospital"></i> Stroke-Ready Centers</h3>
+                    <ul class="hospital-list">
+                        <li>City General Center <span>6 min</span></li>
+                        <li>NeuroLife Specialty <span>10 min</span></li>
+                    </ul>
+                </div>
+                <div class="hub-card alert-summary">
+                    <p class="txt-success"><i class="fas fa-check-double"></i> SMS SENT [Delivered]</p>
+                    <p class="txt-success"><i class="fas fa-location-arrow"></i> LOCATION SHARED</p>
+                   <button onclick="resendAlert()" style="position: relative; z-index: 9999; padding: 15px; width: 100%;">
+    Resend SMS Alert
+</button>
+                </div>
+            </div>
+
+            <div class="hub-column">
+                <div class="hub-card guide-card">
+                    <h3><i class="fas fa-first-aid"></i> First Aid (FAST)</h3>
+                    <img src="https://img.freepik.com/free-vector/human-brain-structure-infographic_1284-20491.jpg" class="fast-img">
+                    <ul class="safety-list">
+                        <li>• Keep Patient Calm</li>
+                        <li>• Do not give Food/Water</li>
+                    </ul>
+                    <button class="btn-guide-detail">Detailed Guide</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+                <div class="card">
+    <h3>Trusted Contacts</h3>
+    <table class="contacts-table">
+        <thead>
+            <tr>
+                <th>Contact</th>
+                <th>Relation</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="trustedContactsBody">
+            {% if contacts %}
+                {% for contact in contacts %}
+                <tr>
+                    <td>{{ contact.name }}</td>
+                    <td>{{ contact.relation }}</td>
+                    <td>{{ contact.phone }}</td>
+                    <td style="color: {{ 'green' if contact.status == 'Sent' else 'red' }}; font-weight: bold;">
+                        {{ contact.status }}
+                    </td>
+                    <td><a href="#" class="btn-edit">Edit</a></td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr id="noContactsRow">
+                    <td colspan="5" style="text-align: center; color: #888; padding: 20px;">
+                        No trusted contacts added yet.
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+            </div>
+
+            <div class="right-col">
+                <div class="card">
+                    <h3>Current Alert Status</h3>
+                    <div class="status-ready">
+                        <span class="dot"></span> Status: Ready
+                    </div>
+                    <button class="btn-test" onclick="runTest()">Emergency Test</button>
+                </div>
+                <div class="card">
+                    <h3>Readiness Score</h3>
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="actionHubModal" class="action-hub-overlay">
+        <div class="action-hub-container">
+            <div class="hub-header">
+                <h2>High Stroke Risk Detected</h2>
+                <button onclick="closeHub()" style="background:none; color:white; font-size:24px; border:none; cursor:pointer;">×</button>
+            </div>
+            <div class="hub-grid">
+                <div class="hub-card">
+                    <h3>Ambulance</h3>
+                    <button class="btn-call-108" onclick="handleEmergencyCall(event)">
+    <i class="fas fa-ambulance"></i> Contact Emergency (108)
+</button>
+                </div>
+                <div class="hub-card">
+                    <h3>SMS Status</h3>
+                    <p style="color:green;">✔ SMS Sent</p>
+                </div>
+                <div class="hub-card">
+                    <h3>First Aid</h3>
+                    <p>Keep Patient Calm</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="close-hub-btn" onclick="toggleActionHub(false)" style="background:none; border:none; color:white; font-size:30px; cursor:pointer;">×</button>
+    
+    <script>
+        // 1. Chart
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Verified', 'GPS', 'Contacts', 'Alerts'],
+                datasets: [{ label: 'Readiness %', data: [100, 90, 80, 85], backgroundColor: 'rgba(74, 108, 247, 0.2)', borderColor: '#4a6cf7' }]
+            }
+        });
+
+        // 2. Save Logic
+        function saveChanges() {
+            const name = document.getElementById('contact_name').value;
+            const phone = document.getElementById('contact_phone').value;
+
+            if(!name || !phone) {
+                Swal.fire('Error', 'Please fill all fields', 'error');
+                return;
+            }
+
+            fetch('/save_emergency_contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, phone: phone })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const tableBody = document.getElementById('trustedContactsBody');
+                const noContactsRow = document.getElementById('noContactsRow');
+                if (noContactsRow) noContactsRow.remove();
+
+                const newRow = `
+                    <tr>
+                        <td>${data.name}</td>
+                        <td>${data.relation}</td>
+                        <td>${data.phone}</td>
+                        <td style="color: green; font-weight: bold;">${data.status}</td>
+                        <td><a href="#">Edit</a></td>
+                    </tr>`;
+                tableBody.innerHTML += newRow;
+                Swal.fire('Success', 'Contact Saved!', 'success');
+            })
+            .catch(err => Swal.fire('Error', 'Something went wrong', 'error'));
+        }
+
+        function runTest() { Swal.fire('Test!', 'Notification simulated.', 'success'); }
+        function openActionHub() { document.getElementById('actionHubModal').style.display = 'flex'; }
+        function closeHub() { document.getElementById('actionHubModal').style.display = 'none'; }
+        
+        function handleAmbulanceProcess() {
+    const statusText = document.getElementById('ambStatus');
+    //const scanner = document.getElementById('scannerLine');
+    const mapIcon = document.getElementById('mapIcon');
+    const btn = document.getElementById('callBtn');
+
+    // १. बटण क्लिक केल्यावर लगेच 'Searching' मोड सुरू होईल
+    btn.disabled = true;
+    btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Requesting...";
+    statusText.innerText = "Searching nearby vehicles...";
+    statusText.style.color = "#f39c12"; // Orange color
+   // scanner.style.display = 'block'; // लाईन फिरायला सुरुवात होईल
+
+    // २. बरोबर ४ सेकंदांनंतर लाईन थांबेल आणि रिझल्ट दिसेल
+    setTimeout(function() {
+     //   const scanner = document.getElementById('scannerLine');
+    if (scanner) {
+        // लाईन गायब करण्यासाठी display 'none' करा
+       // scanner.style.display = 'none'; 
+       // scanner.remove(); // दुसरी पद्धत - यामुळे लाईन पूर्णपणे निघून जाईल
+    }
+        const statusText = document.getElementById('ambStatus');
+    if (statusText) {
+        statusText.innerText = "Ambulance Dispatched (ETA: 8 mins)";
+        statusText.style.color = "#27ae60"; // Green color
+    }
+        // आयकॉन बदला (Marker चा Ambulance करा)
+       const btn = document.getElementById('callBtn');
+    if (btn) {
+        btn.innerHTML = "<i class='fas fa-check'></i> Call Connected (108)";
+        btn.style.background = "#27ae60";
+    }
+        // एक सक्सेस मेसेज दाखवा
+        alert("Emergency Confirmed! Ambulance is on the way.");
+    }, 4000); // ४००० म्हणजे ४ सेकंद. हे बदलून तुम्ही वेळ कमी-जास्त करू शकता.
+}
+        // १. हब उघडण्यासाठी आणि बंद करण्यासाठी फंक्शन
+function toggleActionHub(show) {
+    const hub = document.getElementById('actionHubOverlay');
+    if (show) {
+        hub.style.display = 'flex';
+        startSimulations(); // अ‍ॅनिमेशन सुरू करा
+    } else {
+        hub.style.display = 'none';
+    }
+}
+
+// २. अ‍ॅम्ब्युलन्स शोधण्याचे सिम्युलेशन
+function startSimulations() {
+    const status = document.getElementById('ambStatus');
+    status.innerText = "Requesting 108...";
+    status.style.color = "orange";
+    
+    setTimeout(() => {
+        status.innerText = "Ambulance Dispatched (ETA: 8 mins)";
+        status.style.color = "#2d8a4e";
+    }, 3000);
+}
+
+// ३. तुमच्या 'Emergency Test' बटणासाठी हे फंक्शन वापरा
+function runTest() {
+    Swal.fire({
+        title: 'Running Emergency Test...',
+        text: 'Simulating high-risk detection sequence.',
+        icon: 'info',
+        timer: 2000,
+        showConfirmButton: false
+    }).then(() => {
+        toggleActionHub(true); // टेस्ट संपली की हब उघडेल
+    });
+}
+
+// ४. मॅप उघडण्यासाठी
+function openGoogleMaps() {
+    window.open("https://www.google.com/maps/search/stroke+hospital+near+me", "_blank");
+}
+
+// ५. एसएमएस रीसेंड लॉजिक
+function resendAlert() {
+    Swal.fire('Alert Resent!', 'Emergency contacts have been notified again.', 'success');
+}
+//scanner.classList.add('hide-scanner');
+// हे फंक्शन 'Emergency Test' बटण दाबल्यावर फक्त हब उघडेल
+function openEmergencyHub() {
+    document.getElementById('actionHubOverlay').style.display = 'flex';
+    // हब उघडल्यावर डिफॉल्ट सर्चिंग मोड असेल
+}
+function handleEmergencyCall(event) {
+    // १. ब्राउझरची डीफॉल्ट अ‍ॅक्शन (पॉपअप) थांबवा
+    if (event) event.preventDefault();
+
+    const statusText = document.getElementById('ambStatus');
+    //const scanner = document.getElementById('scannerLine');
+    const btn = document.getElementById('callBtn');
+
+    // २. बटण डिसेबल करा (जेणेकरून पॉपअप ट्रिगर होणार नाही)
+    btn.disabled = true;
+    btn.style.opacity = "0.7";
+    btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Connecting...";
+
+    // ३. अ‍ॅनिमेशन सुरू करा
+    statusText.innerText = "Searching nearby vehicles...";
+    statusText.style.color = "#f39c12"; // Orange
+   // if (scanner) scanner.style.display = 'block';
+
+    // ४. ४ सेकंदांनंतर रिझल्ट दाखवा
+    setTimeout(() => {
+       // if (scanner) scanner.style.display = 'none'; // लाईन गायब करा
+        
+        statusText.innerText = "Ambulance Dispatched (ETA: 8 mins)";
+        statusText.style.color = "#27ae60"; // Green
+        
+        btn.innerHTML = "<i class='fas fa-check'></i> Call Connected";
+        btn.style.background = "#27ae60";
+
+        // ५. शेवटी मेसेज दाखवा
+        alert("Emergency Confirmed! Ambulance is on the way.");
+    }, 4000);
+}
+function openGoogleMap() {
+    // १. युजरचे लोकेशन मिळवण्याचा प्रयत्न करा
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            // २. जवळच्या हॉस्पिटलचा सर्च देणारी Google Maps लिंक
+            // 'q=hospital' मुळे नकाशा उघडताच लाल पिन्स (Hospitals) दिसतील
+            const mapUrl = `https://www.google.com/maps/search/hospital/@${lat},${lon},14z`;
+
+            // ३. नवीन टॅबमध्ये नकाशा उघडा
+            window.open(mapUrl, '_blank');
+
+        }, function(error) {
+            // जर लोकेशन नाकारले तर जनरल हॉस्पिटल सर्च उघडा
+            console.log("Location access denied.");
+            window.open("https://www.google.com/maps/search/hospital", '_blank');
+        });
+    } else {
+        // ब्राउझर सपोर्ट करत नसेल तर
+        window.open("https://www.google.com/maps/search/hospital", '_blank');
+    }
+}
+// हे फंक्शन 'Contact Emergency' बटण दाबल्यावर चालेल
+
+function resendAlert() {
+    fetch('/send_emergency_sms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ count: resendCount })
+    })
+    .then(res => res.json())
+    .then(data => Swal.fire('Sent!', 'All contacts notified via SMS.', 'success'));
+}
+let resendCount = 0;
+
+function resendAlert() {
+    const contacts = "{{ all_numbers }}";
+    const message = "EMERGENCY! High Stroke Risk Detected. View Info: http://192.168.x.x:5000/profile/{{ user_id }}";
+    
+    // 1. Terminal madhye message pathvnyasathi (Backend log)
+    fetch('/log_sms', { method: 'POST' });
+
+    // 2. Mobile var SMS app ughadnyasathi
+    const smsUri = `sms:${contacts}?body=${encodeURIComponent(message)}`;
+    window.location.href = smsUri;
+}
+    </script>
+    
+</body>
+</html>

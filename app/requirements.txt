@@ -1,0 +1,10 @@
+Flask>=2.2
+flask_sqlalchemy
+flask_cors
+pandas
+numpy
+scikit-learn
+xgboost
+imbalanced-learn
+joblib
+shap
